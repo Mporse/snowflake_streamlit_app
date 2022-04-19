@@ -17,9 +17,10 @@ my_fruit_list = pd.read_csv("https://uni-lab-files.s3.us-west-2.amazonaws.com/da
 my_fruit_list = my_fruit_list.set_index("Fruit")
 
 # Add list to allow users to pick the fruits they want in their smoothies
-streamlit.multiselect(label = "Pick some fruit:", 
-                      options = list(my_fruit_list.index),
-                      default = ["Avocado", "Strawberries"])
+fruits_selected = streamlit.multiselect(label = "Pick some fruit:", 
+                                        options = list(my_fruit_list.index),
+                                        default = ["Avocado", "Strawberries"])
+fruits_to_show = my_fruit_list.loc[fruits_selected]
 
 # Display table of fruit
-streamlit.dataframe(my_fruit_list)
+streamlit.dataframe(fruits_to_show)
