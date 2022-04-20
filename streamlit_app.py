@@ -27,16 +27,21 @@ fruits_to_show = my_fruit_list.loc[fruits_selected]
 # Display table of fruit
 streamlit.dataframe(fruits_to_show)
 
-# Get Fruityvice API response
+# Try-Except for the fruityvice api response
 streamlit.header("Fruityvice Fruit Advice!")
-fruit_choice = streamlit.text_input("What fruit would you like information about?", "Kiwi")
-streamlit.write("The user entered", fruit_choice)
+try:
+    # Get Fruityvice API response
+    fruit_choice = streamlit.text_input("What fruit would you like information about?", "Kiwi")
+    if not fruit_choice:
+        streamlit.error("Please select a fruit to get information.")
+    else:
+        # Get and normalize response from fruityvice API
+        fruityvice_response = requests.get("https://www.fruityvice.com/api/fruit/" + fruit_choice)
+        fruityvice_normalized = pd.json_normalize(fruityvice_response.json())
+        streamlit.dataframe(fruityvice_normalized)
 
-fruityvice_response = requests.get("https://www.fruityvice.com/api/fruit/" + fruit_choice)
-
-# Normalize the API response
-fruityvice_normalized = pd.json_normalize(fruityvice_response.json())
-streamlit.dataframe(fruityvice_normalized)
+except URLError as e:
+    streamlit.error()
 
 ## Add a stop command to prevent the rest of the code from running while doing testing
 streamlit.stop()
