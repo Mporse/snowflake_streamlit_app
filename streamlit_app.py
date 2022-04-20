@@ -11,6 +11,12 @@ def get_fruityvice_data(some_fruit_choice):
 
     return fruityvice_normalized
 
+def get_fruit_load_list():
+    with my_cnx.cursor() as my_cur:
+        my_cur.execute("SELECT * FROM FRUIT_LOAD_LIST")
+        return my_cur.fetchall()
+
+
 
 # Initiate titles and text for the web app
 streamlit.title("My Parents' New Healthy Diner")
@@ -50,16 +56,15 @@ try:
 except URLError as e:
     streamlit.error()
 
-## Add a stop command to prevent the rest of the code from running while doing testing
-streamlit.stop()
-
-# Add connection to Snowflake
-my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
-my_cur = my_cnx.cursor()
-my_cur.execute("SELECT * FROM FRUIT_LOAD_LIST")
-my_data_rows = my_cur.fetchall()
+# Add button for loading fruit from Snowflake
 streamlit.header("The fruit load list contains:")
-streamlit.dataframe(my_data_rows)
+if streamlit.button("Get Fruit Load List"):
+    my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+    my_data_rows = get_fruit_load_list()
+    streamlit.dataframe(my_data_rows)
+
+# Add a stop command to prevent the rest of the code from running while doing testing
+streamlit.stop()
 
 # Option for user to add their own fruit to the list
 fruit_to_add = streamlit.text_input("What fruit would you like to add to the list?")
